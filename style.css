@@ -91,6 +91,23 @@ h1 { color: var(--secondary-color); margin: 0; }
 .wuxing-jin { color: var(--color-jin); }
 .wuxing-shui { color: var(--color-shui); }
 
+/* 干支关系样式 */
+.shen-sha-container {
+    margin-top: 25px;
+    background-color: #faf3e0;
+    padding: 15px 20px;
+    border-radius: 8px;
+    border: 1px solid #f3d19c;
+}
+.shen-sha-container h3 { margin-top: 0; margin-bottom: 15px; color: #a0522d; }
+.relation-item {
+    font-size: 14px;
+    line-height: 1.8;
+    color: #5d4037;
+}
+.relation-item:not(:last-child) { margin-bottom: 8px; }
+.relation-item strong { font-weight: 600; color: #a0522d; }
+
 .d-yun-container { margin-top: 30px; }
 .qi-yun-age { font-size: 14px; color: #7f8c8d; font-weight: normal; margin-left: 10px; }
 .d-yun-list { display: flex; flex-direction: column; gap: 15px; }
@@ -115,9 +132,25 @@ h1 { color: var(--secondary-color); margin: 0; }
 .toggle-liunian-btn:hover { background-color: #e9e9e9; border-color: #aaa; }
 .toggle-liunian-btn.active { background-color: var(--primary-color); color: white; border-color: var(--primary-color); }
 .liunian-container {
-    max-height: 0; overflow: hidden; transition: max-height 0.5s ease-in-out;
+    max-height: 0; overflow: hidden; transition: max-height 0.7s ease-in-out;
 }
-.liunian-container.show { max-height: 500px; }
+.liunian-container.show { max-height: 800px; /* 一个足够大的值 */ }
+
+.liunian-relations-container {
+    background-color: #eef7ff;
+    border: 1px solid #a9cce3;
+    border-radius: 6px;
+    padding: 10px 15px;
+    margin-top: 15px;
+}
+.liunian-relations-container h4 {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+    color: var(--primary-color);
+    border-bottom: 1px solid #a9cce3;
+    padding-bottom: 8px;
+}
+
 .liunian-table {
     width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px;
 }

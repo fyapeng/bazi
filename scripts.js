@@ -28,6 +28,22 @@ const CANG_GAN = {
     '子':['癸'], '丑':['己','癸','辛'], '寅':['甲','丙','戊'], '卯':['乙'], '辰':['戊','乙','癸'], '巳':['丙','庚','戊'],
     '午':['丁','己'], '未':['己','丁','乙'], '申':['庚','壬','戊'], '酉':['辛'], '戌':['戊','辛','丁'], '亥':['壬','甲']
 };
+const RELATIONS = {
+    ganHe: {'甲':'己', '乙':'庚', '丙':'辛', '丁':'壬', '戊':'癸'},
+    zhiLiuHe: {'子':'丑', '寅':'亥', '卯':'戌', '辰':'酉', '巳':'申', '午':'未'},
+    zhiSanHe: {'申':'子辰', '亥':'卯未', '寅':'午戌', '巳':'酉丑'},
+    zhiSanHui: {'寅':'卯辰', '巳':'午未', '申':'酉戌', '亥':'子丑'},
+    zhiChong: {'子':'午', '丑':'未', '寅':'申', '卯':'酉', '辰':'戌', '巳':'亥'},
+    zhiXing: {
+        '寅':'巳', '巳':'申', '申':'寅',
+        '丑':'戌', '戌':'未', '未':'丑',
+        '子':'卯', '卯':'子',
+        '辰':'辰', '午':'午', '酉':'酉', '亥':'亥'
+    },
+    zhiHai: {'子':'未', '丑':'午', '寅':'巳', '卯':'辰', '申':'亥', '酉':'戌'},
+    zhiPo: {'子':'酉', '卯':'午', '辰':'丑', '未':'戌', '申':'巳', '寅':'亥'},
+    anHe: {'寅':'丑', '卯':'申'}
+};
 
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('calculate-btn').addEventListener('click', calculateBazi);
@@ -59,7 +75,7 @@ function calculateBazi() {
         day: { gz: lunarData.gzDay, gan: lunarData.gzDay[0], zhi: lunarData.gzDay[1] },
         hour: { gz: hourGan + hourZhi, gan: hourGan, zhi: hourZhi }
     };
-
+    
     const dayMasterGan = bazi.day.gan;
     for (const pillarName in bazi) {
         const pillar = bazi[pillarName];
@@ -78,7 +94,13 @@ function calculateBazi() {
     });
 
     displayBazi(bazi);
-    displayDaYun(dYunList, qiYunAge, birthDate.getFullYear(), dayMasterGan);
+    
+    const originalGanZhi = [bazi.year.gz, bazi.month.gz, bazi.day.gz, bazi.hour.gz];
+    const relations = analyzeRelations(originalGanZhi);
+    document.getElementById('tian-gan-relations').innerHTML = relations.ganRelations.join('，') || '无';
+    document.getElementById('di-zhi-relations').innerHTML = relations.zhiRelations.join('，') || '无';
+
+    displayDaYun(dYunList, qiYunAge, birthDate.getFullYear(), dayMasterGan, originalGanZhi);
     document.getElementById('result-container').classList.remove('hidden');
 }
 
@@ -91,7 +113,7 @@ function getTenGod(dayMaster, other) {
     const [dmWuXing, otherWuXing] = [WUXING[dayMaster], WUXING[targetGan]];
     const [dmYinYang, otherYinYang] = [YINYANG[dayMaster], YINYANG[targetGan]];
     
-    if (!otherYinYang) return ''; // Should not happen if targetGan is valid
+    if (!otherYinYang) return getTenGod(dayMaster, CANG_GAN[other][0]);
 
     const relation = WUXING_REL[dmWuXing][otherWuXing];
     return SHISHEN[relation][dmYinYang === otherYinYang ? '同性' : '异性'];
@@ -141,7 +163,56 @@ function displayBazi(bazi) {
     ['year', 'month', 'day', 'hour'].forEach(renderPillar);
 }
 
-function displayDaYun(dYunList, qiYunAge, birthYear, dayMasterGan) {
+function analyzeRelations(ganZhiArray) {
+    const gans = ganZhiArray.map(p => p[0]);
+    const zhis = ganZhiArray.map(p => p[1]);
+    let ganRelations = new Set();
+    let zhiRelations = new Set();
+
+    // 天干关系
+    for (let i = 0; i < gans.length; i++) {
+        for (let j = i + 1; j < gans.length; j++) {
+            if (RELATIONS.ganHe[gans[i]] === gans[j] || RELATIONS.ganHe[gans[j]] === gans[i]) {
+                ganRelations.add(`${createColoredSpan(gans[i])}${createColoredSpan(gans[j])}相合`);
+            }
+            if (WUXING_REL[WUXING[gans[i]]][WUXING[gans[j]]] === '克我' || WUXING_REL[WUXING[gans[i]]][WUXING[gans[j]]] === '我克') {
+                ganRelations.add(`${createColoredSpan(gans[i])}${createColoredSpan(gans[j])}相克`);
+            }
+        }
+    }
+
+    // 地支关系
+    for (let i = 0; i < zhis.length; i++) {
+        for (let j = i + 1; j < zhis.length; j++) {
+            if (RELATIONS.zhiLiuHe[zhis[i]] === zhis[j] || RELATIONS.zhiLiuHe[zhis[j]] === zhis[i]) zhiRelations.add(`${createColoredSpan(zhis[i])}${createColoredSpan(zhis[j])}六合`);
+            if (RELATIONS.zhiChong[zhis[i]] === zhis[j] || RELATIONS.zhiChong[zhis[j]] === zhis[i]) zhiRelations.add(`${createColoredSpan(zhis[i])}${createColoredSpan(zhis[j])}相冲`);
+            if (RELATIONS.zhiXing[zhis[i]] === zhis[j] || RELATIONS.zhiXing[zhis[j]] === zhis[i]) zhiRelations.add(`${createColoredSpan(zhis[i])}${createColoredSpan(zhis[j])}相刑`);
+            if (RELATIONS.zhiHai[zhis[i]] === zhis[j] || RELATIONS.zhiHai[zhis[j]] === zhis[i]) zhiRelations.add(`${createColoredSpan(zhis[i])}${createColoredSpan(zhis[j])}相害`);
+            if (RELATIONS.zhiPo[zhis[i]] === zhis[j] || RELATIONS.zhiPo[zhis[j]] === zhis[i]) zhiRelations.add(`${createColoredSpan(zhis[i])}${createColoredSpan(zhis[j])}相破`);
+            if (RELATIONS.anHe[zhis[i]] === zhis[j] || RELATIONS.anHe[zhis[j]] === zhis[i]) zhiRelations.add(`${createColoredSpan(zhis[i])}${createColoredSpan(zhis[j])}暗合`);
+        }
+    }
+    
+    const zhiSet = new Set(zhis);
+    // ** BUG FIX IS HERE: Iterate over Object.values() instead of Object.keys() **
+    for (const heju of Object.values(RELATIONS.zhiSanHe)) {
+        if (heju.split('').every(z => zhiSet.has(z))) {
+            zhiRelations.add(`${createColoredSpan(heju[0])}${createColoredSpan(heju[1])}${createColoredSpan(heju[2])}三合`);
+        }
+    }
+    for (const huiju of Object.values(RELATIONS.zhiSanHui)) {
+        if (huiju.split('').every(z => zhiSet.has(z))) {
+            zhiRelations.add(`${createColoredSpan(huiju[0])}${createColoredSpan(huiju[1])}${createColoredSpan(huiju[2])}三会`);
+        }
+    }
+    
+    return {
+        ganRelations: [...ganRelations],
+        zhiRelations: [...zhiRelations]
+    };
+}
+
+function displayDaYun(dYunList, qiYunAge, birthYear, dayMasterGan, originalGanZhi) {
     document.getElementById('qi-yun-age').textContent = `(${qiYunAge}岁起运)`;
     const container = document.getElementById('d-yun-list');
     container.innerHTML = '';
@@ -158,11 +229,10 @@ function displayDaYun(dYunList, qiYunAge, birthYear, dayMasterGan) {
             const currentYear = birthYear + startAge + j;
             const liunianGz = calendar.solar2lunar(currentYear, 6, 15).gzYear;
             const liunianGan = liunianGz[0], liunianZhi = liunianGz[1];
-            // BUG FIX IS HERE: Was `cg.gan`, should be `cg`
             const liunianCangGanHtml = CANG_GAN[liunianZhi].map(cg => `${createColoredSpan(cg)}<small>(${getTenGod(dayMasterGan, cg)})</small>`).join(' ');
 
             liunianHtml += `
-                <tr>
+                <tr data-liunian-gz="${liunianGz}">
                     <td>${currentYear} <small>(${startAge+j}岁)</small></td>
                     <td>${createColoredSpan(liunianGan)}${createColoredSpan(liunianZhi)}</td>
                     <td>${getTenGod(dayMasterGan, liunianGan)}</td>
@@ -186,6 +256,11 @@ function displayDaYun(dYunList, qiYunAge, birthYear, dayMasterGan) {
                 </div>
             </div>
             <div class="liunian-container">
+                 <div class="liunian-relations-container">
+                    <h4>本运/流年关系</h4>
+                    <div class="relation-item"><strong>天干：</strong><span class="dynamic-gan-relations"></span></div>
+                    <div class="relation-item"><strong>地支：</strong><span class="dynamic-zhi-relations"></span></div>
+                 </div>
                 <table class="liunian-table">
                     <thead><tr><th>年份</th><th>干支</th><th>天干十神</th><th>地支藏干(十神)</th></tr></thead>
                     <tbody>${liunianHtml}</tbody>
@@ -193,6 +268,29 @@ function displayDaYun(dYunList, qiYunAge, birthYear, dayMasterGan) {
             </div>
         `;
         container.appendChild(dYunItem);
+
+        const ganRelationsEl = dYunItem.querySelector('.dynamic-gan-relations');
+        const zhiRelationsEl = dYunItem.querySelector('.dynamic-zhi-relations');
+        
+        // 默认显示大运与原局的关系
+        const daYunRelations = analyzeRelations([...originalGanZhi, gz]);
+        ganRelationsEl.innerHTML = daYunRelations.ganRelations.join('，') || '无';
+        zhiRelationsEl.innerHTML = daYunRelations.zhiRelations.join('，') || '无';
+
+        // 为流年表格的每一行添加鼠标悬停事件
+        dYunItem.querySelectorAll('.liunian-table tbody tr').forEach(row => {
+            row.addEventListener('mouseover', () => {
+                const liunianGz = row.dataset.liunianGz;
+                const dynamicRelations = analyzeRelations([...originalGanZhi, gz, liunianGz]);
+                ganRelationsEl.innerHTML = dynamicRelations.ganRelations.join('，') || '无';
+                zhiRelationsEl.innerHTML = dynamicRelations.zhiRelations.join('，') || '无';
+            });
+            row.addEventListener('mouseleave', () => {
+                // 鼠标离开时恢复只显示大运的关系
+                ganRelationsEl.innerHTML = daYunRelations.ganRelations.join('，') || '无';
+                zhiRelationsEl.innerHTML = daYunRelations.zhiRelations.join('，') || '无';
+            });
+        });
     });
 
     container.querySelectorAll('.toggle-liunian-btn').forEach(btn => {
@@ -200,11 +298,7 @@ function displayDaYun(dYunList, qiYunAge, birthYear, dayMasterGan) {
             const container = e.target.closest('.d-yun-item').querySelector('.liunian-container');
             e.target.classList.toggle('active');
             container.classList.toggle('show');
-            if (e.target.classList.contains('active')) {
-                e.target.textContent = '收起流年';
-            } else {
-                e.target.textContent = '查看流年';
-            }
+            e.target.textContent = e.target.classList.contains('active') ? '收起流年' : '查看流年';
         });
     });
 }
