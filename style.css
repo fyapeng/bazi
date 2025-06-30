@@ -1,0 +1,148 @@
+:root {
+    --primary-color: #3498db;
+    --secondary-color: #2c3e50;
+    --bg-color: #f4f7f9;
+    --card-bg-color: #ffffff;
+    --text-color: #333;
+    --border-color: #e0e0e0;
+    --day-master-bg: #fff5f5;
+    
+    /* 五行颜色 */
+    --color-mu: #27ae60;  /* 木 - 绿 */
+    --color-huo: #e74c3c; /* 火 - 红 */
+    --color-tu: #a0522d;  /* 土 - 棕 */
+    --color-jin: #d4af37;  /* 金 - 金色 */
+    --color-shui: #3498db; /* 水 - 蓝 */
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 20px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+}
+
+.container {
+    width: 100%;
+    max-width: 800px;
+    background-color: var(--card-bg-color);
+    padding: 20px 30px;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+}
+
+header {
+    text-align: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 15px;
+    margin-bottom: 25px;
+}
+
+h1 { color: var(--secondary-color); margin: 0; }
+.subtitle { margin: 5px 0 0; color: #7f8c8d; }
+
+.input-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    align-items: end;
+    margin-bottom: 30px;
+}
+
+.input-group { display: flex; flex-direction: column; }
+.input-group label { margin-bottom: 8px; font-size: 14px; color: #555; text-align: left; }
+.input-group input, .input-group select {
+    width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 16px; box-sizing: border-box;
+}
+
+#calculate-btn {
+    background-color: var(--primary-color);
+    color: white; border: none; padding: 12px 20px; font-size: 16px; border-radius: 6px;
+    cursor: pointer; transition: background-color 0.3s, transform 0.2s; height: 42px;
+}
+#calculate-btn:hover { background-color: #2980b9; }
+#calculate-btn:active { transform: scale(0.98); }
+
+#result-container { border-top: 1px solid var(--border-color); padding-top: 20px; }
+#result-container.hidden { display: none; }
+#result-container h2, #result-container h3 {
+    text-align: center; color: var(--secondary-color); margin-top: 10px; margin-bottom: 20px;
+}
+
+.bazi-chart {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; text-align: center;
+    background-color: #f8f9fa; padding: 15px; border-radius: 8px;
+}
+
+.chart-header { font-weight: bold; color: #7f8c8d; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); }
+.ten-god { font-size: 16px; color: #34495e; padding: 8px 0; }
+.tian-gan, .di-zhi { font-size: 28px; font-weight: bold; padding: 5px 0; }
+.day-master { background-color: var(--day-master-bg); border-radius: 4px; }
+.cang-gan { font-size: 14px; color: #95a5a6; border-top: 1px solid var(--border-color); padding-top: 10px; min-height: 40px; }
+.cang-gan small { font-size: 12px; }
+
+.wuxing-mu { color: var(--color-mu); }
+.wuxing-huo { color: var(--color-huo); }
+.wuxing-tu { color: var(--color-tu); }
+.wuxing-jin { color: var(--color-jin); }
+.wuxing-shui { color: var(--color-shui); }
+
+.d-yun-container { margin-top: 30px; }
+.qi-yun-age { font-size: 14px; color: #7f8c8d; font-weight: normal; margin-left: 10px; }
+.d-yun-list { display: flex; flex-direction: column; gap: 15px; }
+
+.d-yun-item {
+    background-color: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid var(--border-color);
+}
+.d-yun-header { display: flex; justify-content: space-between; align-items: center; }
+.d-yun-main { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+.d-yun-main .gan-zhi { font-size: 24px; font-weight: bold; }
+.d-yun-tengod { font-size: 14px; color: #34495e; }
+.d-yun-cang-gan { font-size: 13px; color: #95a5a6; }
+.d-yun-cang-gan small { font-size: 11px; }
+
+.d-yun-side { text-align: right; }
+.d-yun-side .age-range { font-size: 14px; color: #7f8c8d; margin-bottom: 8px; }
+
+.toggle-liunian-btn {
+    background: none; border: 1px solid #ccc; color: #555; padding: 5px 10px;
+    border-radius: 20px; cursor: pointer; font-size: 12px; transition: all 0.3s;
+}
+.toggle-liunian-btn:hover { background-color: #e9e9e9; border-color: #aaa; }
+.toggle-liunian-btn.active { background-color: var(--primary-color); color: white; border-color: var(--primary-color); }
+.liunian-container {
+    max-height: 0; overflow: hidden; transition: max-height 0.5s ease-in-out;
+}
+.liunian-container.show { max-height: 500px; }
+.liunian-table {
+    width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px;
+}
+.liunian-table th, .liunian-table td {
+    padding: 8px; text-align: center; border-bottom: 1px solid var(--border-color);
+}
+.liunian-table th { background-color: #f1f3f5; color: #555; font-weight: 600; }
+.liunian-table td small { font-size: 12px; color: #95a5a6; }
+.liunian-table .cang-gan-cell { font-size: 13px; line-height: 1.5; }
+.liunian-table .cang-gan-cell small { font-size: 11px; }
+
+.footer {
+    text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border-color);
+    font-size: 12px; color: #95a5a6;
+}
+.footer p { margin: 5px 0; }
+.footer a { color: var(--primary-color); text-decoration: none; }
+.footer a:hover { text-decoration: underline; }
+.footer .disclaimer { margin-top: 15px; font-size: 11px; color: #b0bec5; }
+
+@media (max-width: 600px) {
+    .container { padding: 15px; }
+    .input-container { grid-template-columns: 1fr; }
+    .bazi-chart { gap: 5px; padding: 10px; }
+    .tian-gan, .di-zhi { font-size: 24px; }
+    .d-yun-main .gan-zhi { font-size: 20px; }
+    .d-yun-side .age-range { font-size: 13px; }
+}

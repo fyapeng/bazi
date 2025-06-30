@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>八字排盘</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>八字排盘</h1>
+        <p class="subtitle">输入您的公历出生信息，即可生成详细命盘</p>
+    </header>
+
+    <div class="input-container">
+        <div class="input-group">
+            <label for="birth-date">出生日期</label>
+            <input type="date" id="birth-date" value="1990-08-15">
+        </div>
+        <div class="input-group">
+            <label for="birth-time">出生时间</label>
+            <input type="time" id="birth-time" value="14:30">
+        </div>
+        <div class="input-group">
+            <label for="gender">性别</label>
+            <select id="gender">
+                <option value="male" selected>男</option>
+                <option value="female">女</option>
+            </select>
+        </div>
+        <button id="calculate-btn">生成命盘</button>
+    </div>
+
+    <div id="result-container" class="hidden">
+        <h2>命盘信息</h2>
+        <div class="bazi-chart">
+            <!-- 标题行 -->
+            <div class="chart-header">年柱</div>
+            <div class="chart-header">月柱</div>
+            <div class="chart-header">日柱</div>
+            <div class="chart-header">时柱</div>
+
+            <!-- 十神行 -->
+            <div id="year-tian-gan-ten-god" class="ten-god"></div>
+            <div id="month-tian-gan-ten-god" class="ten-god"></div>
+            <div class="ten-god">日主</div>
+            <div id="hour-tian-gan-ten-god" class="ten-god"></div>
+
+            <!-- 天干行 -->
+            <div id="year-tian-gan" class="tian-gan"></div>
+            <div id="month-tian-gan" class="tian-gan"></div>
+            <div id="day-tian-gan" class="tian-gan day-master"></div>
+            <div id="hour-tian-gan" class="tian-gan"></div>
+
+            <!-- 地支行 -->
+            <div id="year-di-zhi" class="di-zhi"></div>
+            <div id="month-di-zhi" class="di-zhi"></div>
+            <div id="day-di-zhi" class="di-zhi"></div>
+            <div id="hour-di-zhi" class="di-zhi"></div>
+
+            <!-- 藏干行 -->
+            <div id="year-cang-gan" class="cang-gan"></div>
+            <div id="month-cang-gan" class="cang-gan"></div>
+            <div id="day-cang-gan" class="cang-gan"></div>
+            <div id="hour-cang-gan" class="cang-gan"></div>
+        </div>
+
+        <div class="d-yun-container">
+            <h3>大运排盘 <span id="qi-yun-age" class="qi-yun-age"></span></h3>
+            <div id="d-yun-list" class="d-yun-list">
+                <!-- 大运和流年将由JS动态生成 -->
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>本项目由 YAPO 制作(<a href="https://github.com/your-username/bazi" target="_blank" rel="noopener noreferrer">GitHub地址</a>)</p>
+        <p>公农历转换算法来自网络，可能存在偏差</p>
+        <p class="disclaimer">科学生活，理性看待，玄学仅供娱乐参考。</p>
+    </div>
+</div>
+
+<script src="scripts.js"></script>
+</body>
+</html>
